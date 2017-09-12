@@ -1,0 +1,218 @@
+<html>
+<meta charset="utf-8">
+<title>game 1</title>
+<canvas id="area" width="400" height="300">
+</canvas>
+<input type="text" id="num" value="3" onchange="">
+<style>
+    canvas {
+        border: 1px solid black;
+    }
+    
+</style>
+<script>
+
+    
+    var imgget = function (path) {
+        var img = new Image()
+        img.src = path
+        return img
+    }
+    var PointBox = function (px, py, bx, by, bw, bh) {
+
+        if (px > bx && px < bx + bw) {
+            if (py > by && py < by + bh) {
+
+                return true
+            }
+        }
+        return false
+    }
+    var panduan = function (ball, paddle) {
+
+        px = ball.x + ball.img.width / 2
+        py = ball.y + ball.img.height / 2
+        bx = paddle.x - ball.img.width / 2
+        by = paddle.y - ball.img.height / 2
+        bw = ball.img.width + paddle.img.width
+        bh = ball.img.height + paddle.img.height
+        return PointBox(px, py, bx, by, bw, bh)
+    }
+
+    var Paddle = function () {
+        var o = {
+            img: imgget('paddle.png'),
+            x: 200,
+            y: 250,
+        }
+
+        return o
+    }
+    var Ball = function () {
+        var o = {
+            img: imgget('ball.png'),
+            x: 199,
+            y: 224,
+            speedx: -2,
+            speedy: -2
+        }
+        var b = true
+        o.b = b
+        return o
+    }
+    var Wall = function () {
+        var o = {
+            img: imgget('block.png'),
+            x: 10,
+            y: 10,
+        }
+        var wallkill = true
+        o.wallkill = wallkill
+
+        return o
+
+    }
+
+    var Game = function () {
+        var screenx = 400
+        var screeny = 300
+
+        var o = {
+
+
+
+        }
+        var canvas = document.querySelector('#area')
+        var context = canvas.getContext('2d')
+        var key
+
+
+
+        o.key = key
+        o.canvas = canvas
+        o.context = context
+
+        o.drawImage = function (gameimg) {
+            o.context.drawImage(gameimg.img, gameimg.x, gameimg.y)
+        }
+        o.clearScreen = function () {
+            o.context.clearRect(0, 0, screenx, screeny)
+        }
+
+        window.addEventListener('keydown', function (event) {
+            o.key = event.key
+        })
+        window.addEventListener('keyup', function (event) {
+            o.key = 0
+        })
+
+        return o
+
+
+    }
+   var Num= function(){
+      var o={
+        num: 3,
+      }
+      var num=document.querySelector("#num").value
+      o.num=num
+    
+document.querySelector('#num').addEventListener('change', function (e) {
+      console.log(e)
+})
+    return o
+}
+    function main() {
+
+        var paddle = Paddle()
+        var ball = Ball()
+        var game = Game()
+        var num=Num()
+        var walls = []
+       
+        console.log(num)
+        for (var i = 0; i < num.num; i++) {
+            var w = Wall()
+            w.x = i * 50
+            w.y = i * 30
+            walls.push(w)
+        }
+
+
+
+
+        var runloop = function () {
+
+            if (panduan(ball, paddle)) {
+                ball.speedy *= -1
+            }
+            if (game.key === "a") {
+                paddle.x -= 5
+
+                if (ball.b === true) {
+                    ball.x -= 5
+                }
+            }
+                else if (game.key === "d") {
+                    paddle.x += 5
+                    if (ball.b === true) {
+                        ball.x += 5
+                    }
+                }
+                game.clearScreen()
+                game.drawImage(paddle)
+                for(var i=0;i<walls.length;i++){
+                    var wall = walls[i]
+                if (wall.wallkill === true) {
+                    game.drawImage(wall)
+                }
+                else{
+                    wall.x=1000
+                    wall.y=1000
+
+                }
+                }
+
+                if (game.key === 'f') {
+                    game.a = 1
+                    ball.b = false
+                }
+                if (game.a === 1) {
+                    ball.x += ball.speedx
+                    ball.y += ball.speedy
+                }
+                if (ball.x <= 0 || ball.x > 400) { ball.speedx *= -1 }
+                if (ball.y <= 0 || ball.y > 300) { ball.speedy *= -1 }
+                if (ball.y > 300) {
+                    game.clearScreen()
+                    alert("gameover")
+                    return 0
+                }
+                for (var i = 0; i < walls.length; i++) {
+                    var wall = walls[i]
+                    if (panduan(ball, wall)) {
+                        wall.wallkill = false
+                        ball.speedy *= -1
+                    }
+
+                }
+                game.drawImage(ball)
+
+
+
+                setTimeout(function () {
+                    runloop()
+                }, 1000 / 60)
+
+            }
+
+            setTimeout(function () {
+                runloop()
+            }, 1000 / 60)
+        }
+        main()
+
+</script>
+
+
+</html>
